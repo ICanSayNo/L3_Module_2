@@ -1,6 +1,7 @@
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -67,13 +68,26 @@ public class ToDoList implements ActionListener {
 			JOptionPane.showMessageDialog(null, output, "TO DO", 3);
 		}
 		if(e.getSource()==button2) {	
+			output="";
+			for(String name:items) {
+				output+=(items.indexOf(name)+1);
+				output+=(". "+name);
+				output+="\n";
+			}
 			String item = JOptionPane.showInputDialog(null, (output + "\n \n \n Which item you like to remove? \n Type the number"), "TO DO", 3);
-			int i = Integer.parseInt(item);
-			if(i>=items.size()||i<=0) {
+			int i = -1;
+			try {
+			i = Integer.parseInt(item);
+			}
+			catch(Exception e1) {
+				System.out.println("that number parse int didn't work");
+			}
+			if(i>items.size()||i<=0) {
 			}
 			else {
 				items.remove(i-1);
 			}
+			System.out.println(items.toString());
 		}
 		if(e.getSource()==button3) {	
 			FileWriter fw;
@@ -95,7 +109,45 @@ public class ToDoList implements ActionListener {
 		if(e.getSource()==button4) {
 			JFileChooser fileExplorer = new JFileChooser();
 			fileExplorer.showOpenDialog(null);
-			File file = fileExplorer.getSelectedFile();
+			
+			try {
+				File file = fileExplorer.getSelectedFile();
+				FileReader fileReader = new FileReader(file);
+				BufferedReader bufferedReader = new BufferedReader(fileReader);
+				StringBuffer stringBuffer = new StringBuffer();
+				String line;
+				items.clear();
+				try {
+					while ((line = bufferedReader.readLine()) != null) {
+						stringBuffer.append(line);
+						stringBuffer.append("\n");
+						items.add(line);
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					fileReader.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				System.out.println("Contents of file:");
+				System.out.println(stringBuffer.toString());
+				output="";
+				for(String name:items) {
+					output+=(items.indexOf(name)+1);
+					output+=(". "+name);
+					output+="\n";
+				}
+				JOptionPane.showMessageDialog(null, output, "TO DO", 3);
+
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}
 	}
 }
